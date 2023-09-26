@@ -10,13 +10,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch(uMsg)
     {
-    case WM_CLOSE:
+    case WM_DESTROY: // At this point, the window has been unrendered but not destroyed, the opportunity to the program to stop
+        PostQuitMessage(0); //The window will be destroyed so PostQuitMessage to the loop to not to continue
+        return 0;
+    case WM_CLOSE: //WM_CLOSE cannot PostQuitMessage because the destroy event has not been notified to the message loop and so to the window
         if(MessageBox(hwnd, L"Do you really wanna quit?", L"My application", MB_OKCANCEL) == IDOK)
         {
-            DestroyWindow(hwnd);
+            DestroyWindow(hwnd); //Notify WM_DESTROY
         }
-        return 0;
-        break;
+        //We are returning zero and adding a WM_DESTROY message to the window if the user accepts
+        return 0; //To return 0 means that the message has been handled
+
     case WM_PAINT:
         PAINTSTRUCT painter;
         HDC handle_device_control = BeginPaint(hwnd, &painter);
@@ -25,6 +29,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         FillRect(handle_device_control, &painter.rcPaint, (HBRUSH)(COLOR_WINDOW +1));
         EndPaint(hwnd, &painter);
+        break;
     }
 
     return DefWindowProc(hwnd, uMsg, wParam, lParam); //Default window procedure
@@ -69,4 +74,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     
     WM_CLOSE gives the opportunity to something else before the window is actually destroyed, like to 
     put a message box to confirm or somehting before the window destruction
+*/
+
+/*
+    NOTE:
+    If you PostQuitMessage(0) before the window has received the destroy message WM_DESTROY, 
+    the window will never be destroyed, just unrendered and the window handle will be open 
+    for ever and the program instance closed so it is a fatal memory leak
 */
