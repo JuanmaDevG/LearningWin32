@@ -19,7 +19,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             DestroyWindow(hwnd); //Notify WM_DESTROY
         }
         //We are returning zero and adding a WM_DESTROY message to the window if the user accepts
-        return 0; //To return 0 means that the message has been handled
+        return 0;
 
     case WM_PAINT:
         PAINTSTRUCT painter;
@@ -29,7 +29,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         FillRect(handle_device_control, &painter.rcPaint, (HBRUSH)(COLOR_WINDOW +1));
         EndPaint(hwnd, &painter);
-        break;
+        return 0;
     }
 
     return DefWindowProc(hwnd, uMsg, wParam, lParam); //Default window procedure
@@ -58,7 +58,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     ShowWindow(window_handle, nCmdShow);
 
     MSG actual_message = {};
-    while(GetMessage(&actual_message, window_handle, 0, 0))
+    while(GetMessage(&actual_message, window_handle, 0, 0) > 0)
     {
         TranslateMessage(&actual_message);  // Erase message header information
         DispatchMessage(&actual_message);   // Window procedure activation
@@ -81,4 +81,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     If you PostQuitMessage(0) before the window has received the destroy message WM_DESTROY, 
     the window will never be destroyed, just unrendered and the window handle will be open 
     for ever and the program instance closed so it is a fatal memory leak
+*/
+
+/*
+    NOTE:
+    When handling a window message, return 0 means that the message as been correctly handled
 */

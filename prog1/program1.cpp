@@ -43,8 +43,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         NULL,                       //Parent window
         NULL,                       //Menu (any?)
         hInstance,                  //Instance handle (of this program)
-        NULL                        //Additional application paramteters
+        NULL                        //Application data pointer that you can pass to your window and get it casting lParam -> CREATESTRUCT.lpCreateParams
     );
+    //The window stores the program data handling the member pointer: lpCreateParams
 
     if(!hwnd) return 0;
 
@@ -78,7 +79,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
     case WM_DESTROY:        //You can also WM_DESTOY a window but not to destroy the program itself
         PostQuitMessage(0);
-        break;
+        return 0;
+
     case WM_PAINT: // Says that a window portion needs to be painted because it is visible
         PAINTSTRUCT window_painter;
         HDC hdc = BeginPaint(hwnd, &window_painter); //HDC -> Handle Device Control
@@ -89,6 +91,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         FillRect(hdc, &window_painter.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
 
         EndPaint(hwnd, &window_painter);
+        return 0;
     }
 
     //Default message handling
