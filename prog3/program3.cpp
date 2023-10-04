@@ -59,13 +59,14 @@ int wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR pCmdline, int 
 
     //Defining the window handle (using my class)
     HWND hwnd = CreateWindowEx(
-        0, wclass_name, L"Try to close many times", 0, 
+        0, wclass_name, L"Try to close many times", WS_OVERLAPPEDWINDOW, 
         //Coords
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
         //More options
         NULL, NULL, hInstance, (void*)positions /*User parameters without relying on global variables*/
     );
 
+    //Show the window to the screen
     ShowWindow(hwnd, nCmdShow);
 
     MSG msg = {};
