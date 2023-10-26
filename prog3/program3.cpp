@@ -1,4 +1,10 @@
 #include <stdio.h>
+
+//Allways define unicode if going to use Windows general functions
+#ifndef UNICODE
+#define UNICODE
+#endif
+
 #include <windows.h>
 
 /*
@@ -29,13 +35,35 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)lParam);    //Set the Global Window Long Pointer
         return 0;
     case WM_DESTROY:
-        /* code */
+        PostQuitMessage(EXIT_SUCCESS);
         return 0;
     case WM_CLOSE:
-        //Continue later
+        //showing the message box
+        if(MessageBox(hwnd, L"Counter incrementor", L"Do you really wanna exit?", MB_OKCANCEL) == IDOK)
+        {
+            Position* pPos = (Position*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+            printf("x = %i , y = %i , z = %i\n", pPos->x, pPos->y, pPos->z);
+            DestroyWindow(hwnd);
+        }
+        else 
+        {
+            Position* pPos = (Position*)GetWindowLongPtr(hwnd, GWLP_USERDATA);      //Get information
+            if(!pPos)
+            {
+                PostQuitMessage(EXIT_FAILURE);
+                return 0;
+            }
+            pPos->x++; pPos->y++; pPos->z++;                                        //Modify memory inside
+        }
         return 0;
     case WM_PAINT:
+        PAINTSTRUCT painter;                                    //The painter stores info about what to paint
+        HDC screen_control = BeginPaint(hwnd, &painter);        //The handle device takes the backBuffer
 
+        //Paint functions
+
+        FillRect(screen_control, &painter.rcPaint, (HBRUSH)(COLOR_WINDOW +1));  //The painter sends the information to paint to the device
+        EndPaint(hwnd, &painter);                                               //EndPaint swaps buffers
         return 0;
     }
 
@@ -44,6 +72,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 int wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR pCmdline, int nCmdShow)
 {
+    printf("The print works well\n");
     //Declaring positions
     Position* positions = new Position[3]{0,0,0};
     
@@ -70,11 +99,12 @@ int wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR pCmdline, int 
     ShowWindow(hwnd, nCmdShow);
 
     MSG msg = {};
-    while(GetMessage(&msg, hwnd, 0, 0))
+    while(GetMessage(&msg, hwnd, 0, 0) > 0)
     {
         TranslateMessage(&msg);         //Removing header information
         DispatchMessage(&msg);          //Processing the message and sending info to the WindowProc
     }
 
+    delete[] positions;
     return 0;
 }
