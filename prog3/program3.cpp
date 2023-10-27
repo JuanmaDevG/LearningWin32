@@ -1,6 +1,3 @@
-#include <stdio.h>
-
-//Allways define unicode if going to use Windows general functions
 #ifndef UNICODE
 #define UNICODE
 #endif
@@ -42,7 +39,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         if(MessageBox(hwnd, L"Counter incrementor", L"Do you really wanna exit?", MB_OKCANCEL) == IDOK)
         {
             Position* pPos = (Position*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-            printf("x = %i , y = %i , z = %i\n", pPos->x, pPos->y, pPos->z);
             DestroyWindow(hwnd);
         }
         else 
@@ -72,8 +68,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 int wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR pCmdline, int nCmdShow)
 {
-    printf("The print works well\n");
-    //Declaring positions
     Position* positions = new Position[3]{0,0,0};
     
     //Defining my window class
@@ -108,3 +102,10 @@ int wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR pCmdline, int 
     delete[] positions;
     return 0;
 }
+
+
+/*
+    NOTE:
+    Mixing cstdio with windows.h can cause problems because the Command line needs to be controlled with the Command Line Handle.
+    IF not done this way, a process leak will be persistently generated
+*/
