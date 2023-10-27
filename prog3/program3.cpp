@@ -36,7 +36,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         return 0;
     case WM_CLOSE:
         //showing the message box
-        if(MessageBox(hwnd, L"Counter incrementor", L"Do you really wanna exit?", MB_OKCANCEL) == IDOK)
+        if(MessageBox(hwnd, L"Do you really wanna exit?", L"Counter incrementor", MB_OKCANCEL) == IDOK)
         {
             Position* pPos = (Position*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
             DestroyWindow(hwnd);
